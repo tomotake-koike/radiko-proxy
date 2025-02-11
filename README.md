@@ -24,7 +24,7 @@ radiko.jp設立目的にもある公共のラジオ配信基盤としての役�
 
 ということでPlaylistの取得応答をProxyで傍受してhttpのエンドポイントに限定してあげれば、またウチの旧式のYAMAHAネットワークレシーバーでもまたradiko.jpを視聴できるであろうと簡単なPythonスクリプトを執筆。
 
-## radiko_proxy.py
+## radiko-proxy.py
 
 かなりプリミティヴな実装になっているため、dnsmasqとかiptables(もしくはhaproxy)に頼っている。
 
@@ -33,7 +33,7 @@ radiko.jp設立目的にもある公共のラジオ配信基盤としての役�
     - （XMLのElementTreeが心配だが…）
   - 適当なsocket実装なのでMedis Playlist取得時にsocketインタフェースレベルでバッファ分割すると視聴が失敗する（機器の電源ON/OFF）
 - このProxyにradiko.jp宛てのパケットが通るようにローカルDNSサーバ（dnsmaqとかで）を立ててネットワークレシーバー側の名前解決をさせる
-  - radiko_proxy.pyからは正規のradiko.jpの名前解決が行えるようこのローカルDNSサーバでresolveさせない
+  - radiko-proxy.pyからは正規のradiko.jpの名前解決が行えるようこのローカルDNSサーバでresolveさせない
 - http://radiko.jp の通信だけ処理するためhttpsのfowardingは別途行う必要がある（iptablesやhaproxyとか）
 - **radiko.jpがHLSのMedia Playlistにhttpのエンドポイントを返さなくなったら別策を検討する必要がある**
 
@@ -51,19 +51,18 @@ radiko.jp設立目的にもある公共のラジオ配信基盤としての役�
   addn-hosts=/etc/hosts.dnsmasq
   user=dnsmasq
   # group=dnsmasq
-  
   bind-interfaces
   listen-address=0.0.0.0
-  
   ```
+  
 - `/etc/hosts.dnsmasq`サンプル
   ```
-  [radiko_proxy.pyを起動するServerのIPaddress] radiko.jp
+  [radiko-proxy.pyを起動するServerのIPaddress] radiko.jp
   ```
 
 ### iptablesでhttps://radiko.jpをケア
 
-radiko_proxy.pyを起動するServerで実行。
+radiko-proxy.pyを起動するServerで実行。
 
 ```sh
 sudo sysctl net.ipv4.ip_forward=1
@@ -72,11 +71,11 @@ sudo iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination $
 sudo iptables -t nat -A POSTROUTING -d ${RADIKO_IP} -j MASQUERADE
 ```
 
-### radiko_proxy.py を実行
+### radiko-proxy.py を実行
 
 適宜daemon化する。
 ```
-sudo python3 radiko_proxy.py
+sudo python3 radiko-proxy.py
 ```
 
 
