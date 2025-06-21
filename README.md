@@ -35,8 +35,8 @@ radiko.jp設立目的にもある公共のラジオ配信基盤としての役�
 - このProxyにradiko.jp宛てのパケットが通るようにローカルDNSサーバ（dnsmaqとかで）を立ててネットワークレシーバー側の名前解決をさせる
   - radiko-proxy.pyからは正規のradiko.jpの名前解決が行えるようこのローカルDNSサーバでresolveさせない
 - http://radiko.jp の通信だけ処理するためhttpsのfowardingは別途行う必要がある（iptablesやhaproxyとか）
-- **radiko.jpがHLSのMedia Playlistにhttpのエンドポイントを返さなくなったら別策を検討する必要がある**
-
+- ~~radiko.jpがHLSのMedia Playlistにhttpのエンドポイントを返さなくなったら別策を検討する必要がある~~
+  - **2025/06とうとうhttpのエンドポイントを返さなくなったためhttpsのリバースプロキシを実装し対応。**
 
 ## 導入手順
 
@@ -78,9 +78,10 @@ sudo iptables -t nat -A POSTROUTING -d ${RADIKO_IP} -j MASQUERADE
 sudo python3 radiko-proxy.py
 ```
 
+### ネットワークレシーバー側設定
+
+機器のDNSサーバ設定を上記dnsmasqを起動したサーバに設定。
 
 ## おわりに
 
 いつまでこのスクリプトが通用するか不明ですが、他メーカーの従前ネットワークレシーバー等でも使えると思われ、大勢の方々のradiko.jpライフの一助になれば幸いです。
-
-
